@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+.venv/
+gate-*.log
+orders/**/*.context.md
+# Credential-shaped files never belong in a repository.
+.env
+.env.*
+!.env.example
+*.env
+*.pem
+*.key
