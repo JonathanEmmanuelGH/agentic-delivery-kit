@@ -1,0 +1,22 @@
+{
+  "id": "LIB-002",
+  "seat": "codex-dev",
+  "model": "codex-high",
+  "base_sha": "489434ee43596b968f74acd407da358e85666238",
+  "objective": "Write off a lost book only after a second staff member, different from the reporter, confirms it; both steps are audited.",
+  "source_refs": [
+    { "file": "demo-app/library/loans.py", "lines": "125-145" }
+  ],
+  "allowed_paths": ["demo-app/library/loans.py", "demo-app/tests/test_loans.py"],
+  "forbidden_paths": ["kit/*", "demo-app/library/fees.py"],
+  "required_cases": {
+    "positive": ["report then confirm by another person writes the book off", "the audit trail shows lend, report_lost, confirm_lost"],
+    "negative": ["the reporter cannot confirm, whatever the case or spacing of the name", "confirm without a report is refused", "a second report is refused"]
+  },
+  "verification": ["VERIFY_SCOPE=auto bash kit/gate/verify.sh"],
+  "evidence_to_post": ["head SHA", "VERIFY line", "exit line", "opposite-seat review link (Claude, strongest tier: a two-person rule is a control)"],
+  "migration": false,
+  "status": "active",
+  "created": "2026-03-03T09:00:00Z",
+  "expires": "2026-03-10T09:00:00Z"
+}

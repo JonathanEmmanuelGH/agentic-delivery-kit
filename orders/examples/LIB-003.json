@@ -1,0 +1,22 @@
+{
+  "id": "LIB-003",
+  "seat": "claude-dev",
+  "model": "sonnet",
+  "base_sha": "489434ee43596b968f74acd407da358e85666238",
+  "objective": "Strip member fields by role in the serializer: internal notes for admins only, email and fees for librarians and admins.",
+  "source_refs": [
+    { "file": "demo-app/library/views.py", "lines": "1-32" }
+  ],
+  "allowed_paths": ["demo-app/library/views.py", "demo-app/tests/test_views.py"],
+  "forbidden_paths": ["kit/*", "demo-app/library/loans.py"],
+  "required_cases": {
+    "positive": ["an admin sees notes and fees"],
+    "negative": ["notes are absent (not blank) for every other role", "a member sees only id and name", "an unknown role is refused"]
+  },
+  "verification": ["VERIFY_SCOPE=auto bash kit/gate/verify.sh"],
+  "evidence_to_post": ["head SHA", "VERIFY line", "exit line", "opposite-seat review link"],
+  "migration": false,
+  "status": "review",
+  "created": "2026-03-03T10:00:00Z",
+  "expires": "2026-03-10T10:00:00Z"
+}

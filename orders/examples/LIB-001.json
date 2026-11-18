@@ -1,0 +1,22 @@
+{
+  "id": "LIB-001",
+  "seat": "claude-dev",
+  "model": "sonnet",
+  "base_sha": "489434ee43596b968f74acd407da358e85666238",
+  "objective": "Cap the late fee at 10.00 and round every fee to whole cents, half up, in one place.",
+  "source_refs": [
+    { "file": "demo-app/library/fees.py", "lines": "1-16" }
+  ],
+  "allowed_paths": ["demo-app/library/fees.py", "demo-app/tests/test_fees.py"],
+  "forbidden_paths": ["kit/*", ".claude/*", "demo-app/library/views.py"],
+  "required_cases": {
+    "positive": ["7 days late costs 1.75", "40 days late costs exactly the cap", "a half cent rounds up"],
+    "negative": ["negative days are refused", "a float daily fee is never used"]
+  },
+  "verification": ["VERIFY_SCOPE=auto bash kit/gate/verify.sh"],
+  "evidence_to_post": ["head SHA", "VERIFY line", "exit line", "opposite-seat review link"],
+  "migration": false,
+  "status": "landed",
+  "created": "2026-03-02T09:00:00Z",
+  "expires": "2026-03-09T09:00:00Z"
+}
