@@ -278,7 +278,7 @@ def split_command(cmd: str):
             continue
         if c in ";|&\n()":
             prev = cur[-1][-1:] if cur else ""
-            if c == "&" and (prev in "<>" or cmd.startswith(">", i + 1)):
+            if c == "&" and ((prev and prev in "<>") or cmd.startswith(">", i + 1)):
                 cur.append(c)
                 i += 1
                 continue

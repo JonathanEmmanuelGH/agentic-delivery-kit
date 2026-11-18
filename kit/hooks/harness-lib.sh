@@ -2,6 +2,9 @@
 # harness-lib.sh: tiny assertion helpers shared by the guard harnesses. Sourced, not run.
 # Every harness runs offline with bash and python3 only, in a private temporary directory.
 
+# lastpipe: `payload ... | expect_rc ...` runs expect_rc in this shell, so the counters
+# it updates survive the pipeline (a script has job control off, which lastpipe needs).
+shopt -s lastpipe
 PASS=0
 FAIL=0
 HARNESS_SESSION="${HARNESS_SESSION:-harness-session-1}"
