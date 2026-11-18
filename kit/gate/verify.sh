@@ -83,7 +83,7 @@ for path in sys.stdin.buffer.read().decode("utf-8", "replace").split("\0"):
     except (OSError, UnicodeDecodeError):
         continue
     for n, line in enumerate(text.splitlines(), 1):
-        if "–" in line or "—" in line:
+        if chr(0x2013) in line or chr(0x2014) in line:
             print(f"LINT: typographic dash: {path}:{n}"); bad = 1
 sys.exit(bad)' || rc=1
   if command -v shellcheck >/dev/null 2>&1; then
