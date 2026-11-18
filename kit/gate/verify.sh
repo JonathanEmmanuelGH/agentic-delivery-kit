@@ -72,9 +72,20 @@ for path in sys.stdin.read().split():
         print(f"LINT: invalid JSON: {path}: {e}"); bad = 1
 sys.exit(bad)' || rc=1
   # House rule: no typographic dashes (U+2013, U+2014) in any tracked text.
-  if git grep -n -I -P '\x{2013}|\x{2014}' -- . >/dev/null 2>&1; then
-    echo "LINT: typographic dash found:"; git grep -n -I -P '\x{2013}|\x{2014}' -- . | head -20; rc=1
-  fi
+  git ls-files -z | python3 -I -c '
+import sys
+bad = 0
+for path in sys.stdin.buffer.read().decode("utf-8", "replace").split("\0"):
+    if not path:
+        continue
+    try:
+        text = open(path, encoding="utf-8").read()
+    except (OSError, UnicodeDecodeError):
+        continue
+    for n, line in enumerate(text.splitlines(), 1):
+        if "–" in line or "—" in line:
+            print(f"LINT: typographic dash: {path}:{n}"); bad = 1
+sys.exit(bad)' || rc=1
   if command -v shellcheck >/dev/null 2>&1; then
     tracked '*.sh' | xargs -r shellcheck -S error || rc=1
   else
