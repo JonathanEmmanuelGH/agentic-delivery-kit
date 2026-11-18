@@ -13,8 +13,12 @@ class FeesTest(unittest.TestCase):
         self.assertEqual(late_fee(7), Decimal("1.75"))
 
     def test_cap(self):
-        self.assertEqual(late_fee(40), FEE_CAP)
-        self.assertEqual(late_fee(10_000), FEE_CAP)
+        # Pin the business value, not only the constant: a test written against
+        # FEE_CAP alone keeps passing when someone edits the cap.
+        self.assertEqual(FEE_CAP, Decimal("10.00"))
+        self.assertEqual(late_fee(40), Decimal("10.00"))
+        self.assertEqual(late_fee(10_000), Decimal("10.00"))
+        self.assertEqual(late_fee(39), Decimal("9.75"))
 
     def test_half_cents_round_up(self):
         self.assertEqual(late_fee(1, daily_fee=Decimal("0.125")), Decimal("0.13"))
