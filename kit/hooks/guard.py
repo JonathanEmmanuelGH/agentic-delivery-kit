@@ -111,7 +111,7 @@ def is_dotenv_name(name: str) -> bool:
 
 def secret_dirs():
     out = []
-    for d in os.environ.get("ADK_SECRET_DIRS", "").split(":"):
+    for d in os.environ.get("ADK_GUARDED_DIRS", "").split(":"):
         d = d.strip()
         if d:
             out.append(os.path.normpath(os.path.expanduser(d)))

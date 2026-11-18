@@ -60,10 +60,10 @@ t 2 Glob '{"pattern": "*.pem", "path": "certs"}'
 t 2 Glob '{"pattern": "**/id_rsa*"}'
 
 # --- a configured secret directory ----------------------------------------------------------
-export ADK_SECRET_DIRS="$HARNESS_TMP/vault"
+export ADK_GUARDED_DIRS="$HARNESS_TMP/vault"
 t 2 Read "{\"file_path\": \"$HARNESS_TMP/vault/settings.json\"}"
 t 0 Read "{\"file_path\": \"$HARNESS_TMP/vaulted/settings.json\"}"
-unset ADK_SECRET_DIRS
+unset ADK_GUARDED_DIRS
 
 # --- malformed payloads -----------------------------------------------------------------
 printf 'garbage' | expect_rc 0 'non-JSON input is allowed (seatbelt)' "$GUARD"

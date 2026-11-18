@@ -11,7 +11,7 @@ control of every decision and every merge.
 
 ## The problem
 
-One AI agent on a codebase is a pair programmer. Five agents across two vendors, running
+One AI agent on a codebase is a pair programmer. Several agents across two vendors, running
 in parallel for months, is a team, and it fails like an unmanaged team:
 
 - two agents edit the same file from different branches and both "pass";
@@ -49,17 +49,17 @@ flowchart LR
     end
     Repo[(Repository<br/>protected branches)]
 
-    Owner -- "decision (verbatim)" --> Orch
-    Chal -. challenges .-> Orch
-    Orch -- "work order" --> Orders
-    Orders -- "validated order + context" --> CD & XD
-    CD & XD -- "every tool call" --> Hooks
-    CD -- "head for review" --> XD
-    XD -- "head for review" --> CD
-    CD & XD -- "merge tree" --> Gate
-    Gate -- "VERIFY: PASS + exit=0" --> Owner
-    Owner -- "merge (only the owner)" --> Repo
-    Sync -. "one contract, two seats" .-> CD & XD
+    Owner -->|"decision (verbatim)"| Orch
+    Chal -.->|"challenges"| Orch
+    Orch -->|"work order"| Orders
+    Orders -->|"validated order and context"| CD & XD
+    CD -->|"every tool call"| Hooks
+    CD -->|"head for review"| XD
+    XD -->|"head for review"| CD
+    CD & XD -->|"merge tree"| Gate
+    Gate -->|"VERIFY PASS and exit=0"| Owner
+    Owner -->|"merge, only the owner"| Repo
+    Sync -.->|"one contract, two seats"| CD & XD
 ```
 
 | Piece | What it does | Where |
@@ -135,10 +135,15 @@ Other rules the guards encode:
   `bash -c`, `eval` and `$(...)`. Reading a file named `push-to-main-notes.md` is fine;
   `git -C other push origin main` is not.
 - **Fail closed on what cannot be classified**: a `$VAR` in command position, an unknown
-  git verb, unparseable quoting.
-- **State the blind spots.** A guard sees one command string, not the script it runs; a
-  heredoc fed to an interpreter is opaque. The harnesses assert these residuals as
-  allowed, so closing one shows up as a flipped test instead of a silent change.
+  git verb, unparseable quoting, and JSON hook input that repeats a key or lacks required
+  fields. Input that is not JSON at all is allowed: the guards are a seatbelt, not a vault,
+  and a guard that wedges every session on a harness hiccup gets disabled.
+- **State the blind spots.** A guard sees one command string, not the script it runs.
+  Known residuals: the contents of a script run by path; a heredoc or here-string fed to
+  an interpreter; a recursive grep over a tree that holds an environment file; a process
+  that already loaded its environment carries those secrets; and non-JSON hook input is
+  allowed. The harnesses assert these residuals as allowed, so closing one shows up as a
+  flipped test instead of a silent change.
 - **A green suite is not a loaded control.** Harnesses prove the logic; a live probe in a
   real session proves the hook is wired.
 
@@ -186,13 +191,15 @@ To use the kit in Claude Code, open this repository (the hooks are wired in
 `.claude/settings.json`) or copy `kit/`, `.claude/` and `.codex/` into your project and
 adjust `ADK_PROTECTED_BRANCHES`, `kit/hooks/role-scopes.conf` and `kit/gate/test-map.txt`.
 Start each session with a charter, for example `/role-worker`.
+The hooks are Claude Code PreToolUse hooks; a Codex seat needs its own adapter, which is
+not included.
 
 ### Configuration
 
 | Variable | Default | Meaning |
 |---|---|---|
 | `ADK_PROTECTED_BRANCHES` | `main master develop` | Branches only the owner's merge moves |
-| `ADK_SECRET_DIRS` | (none) | Extra colon-separated directories treated as secret stores |
+| `ADK_GUARDED_DIRS` | (none) | Extra colon-separated directories treated as secret stores |
 | `ADK_ROLE_DIR` | `~/.local/state/agentic-kit/roles` | Where role claims are recorded (one 0600 file per session) |
 | `ADK_ROLE_TTL_MIN` | `1440` | Minutes a role claim stays valid |
 | `VERIFY_SCOPE` | `full` | `auto` selects tests from the changed paths |

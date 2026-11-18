@@ -29,7 +29,7 @@ from collections import Counter
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from guard import path_reason  # noqa: E402  (same predicate as the hooks)
 
-BASELINE = os.environ.get("ADK_SECRET_BASELINE", "kit/hooks/secret-scan-baseline.txt")
+BASELINE = os.environ.get("ADK_SCAN_BASELINE", "kit/hooks/secret-scan-baseline.txt")
 
 RULES = [
     ("private-key", re.compile(r"-----BEGIN [A-Z ]*PRIVATE KEY-----")),

@@ -12,7 +12,7 @@ mkdir -p "$REPO/src"
 cd "$REPO" || exit 1
 git init -q -b draft
 g() { git -c user.name=harness -c user.email=harness@example.invalid "$@"; }
-export ADK_SECRET_BASELINE="baseline.txt"
+export ADK_SCAN_BASELINE="baseline.txt"
 
 check() { # check WANT_RC LABEL [ARGS...]
   local want=$1 label=$2 got
