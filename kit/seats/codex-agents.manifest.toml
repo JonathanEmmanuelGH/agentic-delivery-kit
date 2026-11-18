@@ -1,0 +1,33 @@
+# Declarative input to kit/seats/sync-codex-agents.py.
+# Every .claude/agents/*.md must appear exactly once: in `included` (rendered for Codex)
+# or in `excluded` with the reason it stays on the Claude side.
+
+# Text that must never reach a Codex contract: Claude-only tools, and commands no seat runs.
+deny_phrases = [
+  "SendMessage",
+  "TaskCreate",
+  "git push origin main",
+  "git push --force",
+]
+
+# Claude model tier -> Codex model. Placeholders: replace with the models your Codex
+# account offers. Pinning is the point: no agent inherits the caller's (expensive) model.
+[models]
+opus = "codex-high"
+sonnet = "codex-standard"
+haiku = "codex-fast"
+
+# Literal rewrites applied to agent bodies before rendering.
+[rewrites]
+"the Agent tool" = "a delegated agent"
+"the opposite seat on a stronger model" = "the Claude seat on its strongest model"
+
+[agents]
+included = ["worker", "reviewer", "qa", "docs-auditor", "challenger", "git-manager"]
+
+[agents.excluded]
+orchestrator = "The orchestration seat dispatches orders and never writes code; it lives in one Claude session."
+
+# Agents whose tools lack Write and Edit but still commit through the shell.
+[agents.workspace_write]
+git-manager = "Commits explicit paths and prepares the merge tree through the shell."
