@@ -1,0 +1,24 @@
+# test-map.txt: which tests a changed path selects, read by tests-for.sh.
+# Format: <glob> <target> [<target> ...]   First matching line wins; * spans directories.
+# Targets: a test file path, ALL (the whole suite), SELF (the changed test file itself),
+# or NONE (no unit tests; the always-on phases of the gate still run).
+# A changed path that matches no line selects ALL: an unmapped file fails safe.
+
+demo-app/library/__init__.py   ALL
+demo-app/library/catalog.py    demo-app/tests/test_catalog.py demo-app/tests/test_loans.py
+demo-app/library/members.py    demo-app/tests/test_members.py demo-app/tests/test_views.py
+demo-app/library/fees.py       demo-app/tests/test_fees.py demo-app/tests/test_loans.py
+demo-app/library/loans.py      demo-app/tests/test_loans.py
+demo-app/library/views.py      demo-app/tests/test_views.py
+demo-app/tests/__init__.py     ALL
+demo-app/tests/helpers.py      ALL
+demo-app/tests/test_*.py       SELF
+
+# Always-on phases (lint, secret scan, guard harnesses, order validation) cover these.
+kit/*                          NONE
+orders/*                       NONE
+.claude/*                      NONE
+.codex/*                       NONE
+*.md                           NONE
+LICENSE                        NONE
+.gitignore                     NONE

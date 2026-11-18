@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/agentic-delivery-kit/work-order.schema.json",
+  "title": "Work order",
+  "description": "One unit of delegated work: who does it, on which model, from which base commit, inside which paths, proven by which cases. validate-work-order.sh enforces this schema with the Python standard library only and reads the enums from this file.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "seat", "model", "base_sha", "objective", "source_refs", "allowed_paths", "forbidden_paths", "required_cases", "verification", "evidence_to_post", "migration", "status", "created", "expires"],
+  "properties": {
+    "id": { "type": "string", "pattern": "^[A-Z]+-[0-9]{3}[a-z]?$" },
+    "seat": { "enum": ["claude-dev", "codex-dev", "codex-tooling", "docs"] },
+    "model": { "enum": ["opus", "sonnet", "haiku", "codex-high", "codex-standard", "codex-fast"] },
+    "base_sha": { "type": "string", "pattern": "^[0-9a-fA-F]{40}$" },
+    "objective": { "type": "string", "minLength": 1 },
+    "source_refs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["file", "lines"],
+        "properties": {
+          "file": { "type": "string", "minLength": 1 },
+          "lines": { "type": "string", "pattern": "^[0-9]+(?:-[0-9]+)?$" }
+        }
+      }
+    },
+    "allowed_paths": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+    "forbidden_paths": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+    "required_cases": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["positive", "negative"],
+      "properties": {
+        "positive": { "type": "array", "items": { "type": "string" } },
+        "negative": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "verification": { "type": "array", "items": { "type": "string" } },
+    "evidence_to_post": { "type": "array", "items": { "type": "string" } },
+    "migration": { "type": "boolean" },
+    "status": { "enum": ["draft", "reserved", "active", "review", "landed", "abandoned"] },
+    "created": { "type": "string", "format": "date-time" },
+    "expires": { "type": "string", "format": "date-time" }
+  }
+}
